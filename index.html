@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Graph DBs in the wild</title>
+
+		<meta name="description" content="A presentation of the family trees from Beit Hatfusot">
+		<meta name="author" content="Benny Daon">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h2>Graph DBs in the Wild</h2>
+          <h3>the case of Douglas E. Goldman<br/> Jewish Genealogy Center</h3>
+					<p>
+						<small>presented by <a href="http://tuzig.com">Benny Daon</a> / 
+              <a href="http://twitter.com/daonb">@daonb</a>
+            </small>
+					</p>
+				</section>
+
+				<section>
+					<h2>The Collection</h2>
+          <div style="float:right">
+            <img src="https://storage.googleapis.com/bhs-flat-pics/FA071E57-1551-475A-82C0-3163227CD7C7.jpg"
+              alt="sasson ajamy family tree" />
+          </div>
+					<p>
+          For the past 30 years people<br/>
+          have contributod<br />
+          close to 11,000 family trees <br />
+          with almost 5 million indviduals
+					</p>
+				</section>
+
+				<!-- Example of nested vertical slides -->
+				<section>
+					<section>
+						<h2>The Source Format - GEDCOM</h2>
+            <ul>
+              <li>Open Format
+              <li>By the LDS Church
+              <li>Initial release - 1984
+              <li>Current version 5.5
+              <li>de-facto standard
+            </ul>
+					</section>
+					<section>
+            <h2>GEDCOM Indviduals<h2>
+            <pre>
+0 @I6680@ INDI
+1 NAME Albert /Einstein/
+2 GIVN Albert
+2 SURN Einstein
+1 SEX M
+1 BIRT
+2 DATE 14 MAR 1879
+2 PLAC Ulm, Badden Wurttemberg, Germany
+1 DEAT
+2 DATE 18 APR 1955
+2 PLAC Princeton New Jersey
+1 OCCU Professor, Physicist and Author of \
+the theory of relativity
+1 FAMC @F2097@
+...
+            </pre>
+					</section>
+					<section>
+            <h2>GEDCOM Families<h2>
+            <pre>
+0 @F2097@ FAM
+1 HUSB @I6676@
+1 WIFE @I6679@
+1 CHIL @I6680@
+1 CHIL @I6681@
+1 MARR
+2 DATE 10 OCT 1878
+2 PLAC Milan Italy
+            </pre>
+					</section>
+				</section>
+
+				<section>
+          <section>
+            <h2>python-gedcom</h2>
+            <ul>
+              <li>Originally written by Daniel Zappala at<br /> Brigham Young University
+              <li class="fragment">GPLv2 hosted on <a
+                href="https://github.com/Beit-Hatfutsot/python-gedcom">github</a>
+              <li class="fragment">No support for different encodings
+              <li class="fragment">No tests
+              <li class="fragment">CRASHES
+              <li class="fragment">Java style Python
+            </ul>
+          </section>
+          <section>
+            <h3>We're (not) All Consenting Adults</h3>
+						<pre><code class="python">
+class Element:
+    ...
+    def level(self):
+        """ Return the level of this element """
+        return self.__level
+
+    def pointer(self):
+        """ Return the pointer of this element """
+        return self.__pointer
+    
+    def tag(self):
+        """ Return the tag of this element """
+        return self.__tag
+    ...
+
+            </code></pre>
+          </section>
+          <section>
+            <h2>Our Fork</h2>
+            <ul>
+              <li>pythonic
+              <li>a wee-bit of testing
+              <li>handles different encodings
+              <li>exceptions, no crashes
+              <li>undocumented
+            </ul>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Why Neo4j?</h2>
+            <ul>
+              <li>We clearly have a graph
+              <li>Our data is research-worthy
+              <li class="fragment">Rik Van Bruggen
+                <a href="http://blog.bruggen.com/2014/01/leftovers-from-holidays-genealogy-graphs.html">posted</a> about gedcom
+              <li class="fragment">It's open & free (at least for us)
+              <li class="fragment">Installation is easy
+              <li class="fragment">A good frontend
+              <li class="fragment">py2neo
+            </ul>
+
+          </section>
+          <section>
+            <h2>Why not Neo4j?</h2>
+            <p>
+            It's an ancient Java based project with murky licensing
+            </P>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Modeling Specs</h2>
+            <ul>
+              <li>lose no data
+              <li>GEDCOM's model is worth keeping
+              <li>keep trees separate
+              <li>allow forest-wide queries
+              <li>protect the privacy of the living
+            </ul>
+
+          </section>
+          <section>
+            <h2>GEDCOM's legacy</h2>
+            <object data="img/family.svg" type="image/svg+xml"
+              style="background-color:white; margin:1em; width:80%;"></object>
+          </section>
+          <section>
+            <h1>Converting the files</h1>
+          </section>
+          <section>
+            <h1><a href="http://104.155.47.188:7474/browser/" target="_blank">
+                Let's Play</a></h1>
+          </section>
+        </section>
+        <section>
+          <h2>The UX</h2>
+          <iframe src="http://akariv.github.io/family-tree-browser/demo.html#14"
+          style="width:80%; height:600px; background-color:white;
+          overflow:hidden;"></iframe>
+        </section>
+        <section>
+          <section>
+            <h2>The API</h2>
+            <ul>
+              <li>Query based on id and radius
+              <li class="fragment">Represent the graph by ids of <br/>parents, spouses, siblings and children
+            </ul>
+          </section>
+          <section>
+						<pre><code class="json">
+{ "180280": {
+
+  "NAME": "Albert /Einstein/",
+  "parents": [ 186959, 183736 ],
+  "spouses": [ 188038, 185975, 192031],
+  "sibilings": [ 188428 ],
+  "children": [ 177829, 187340, 191684 ],
+  "id": "@I6680@",
+  "SEX": "M",
+  "BIRT_PLAC": "Ulm, Badden Wurttemberg, Germany",
+  "NAME_GIVN": "Albert",
+  "tree_id": "641C1040-12D3-48DA-ABFA-5E723EE6C011",
+  "OCCU": "Professor, Physicist and Author of the theory of relativity",
+  "DEAT_PLAC": "Princeton New Jersey",
+  "FAMS": "@F2098@",
+  "NAME_SURN": "Einstein",
+  "FAMC": "@F2097@",
+  "DEAT_DATE": "1955",
+  "BIRT_DATE": "14 MAR 1879",
+  ...
+} ...}
+
+            </code></pre>
+          </section>
+          <section>
+						<pre><code class="python">
+tx = graph.cypher.begin()
+tx.append("MATCH (n) WHERE ID(n)={} RETURN n ".format(individual_id))
+# parents
+tx.append("""
+    MATCH (n)<-[:FATHER_OF|:MOTHER_OF]-(r)
+    WHERE ID(n)={}
+    RETURN ID(r)
+""".format(individual_id))
+            </code></pre>
+        </section>
+        <section>
+						<pre><code class="python">
+# spouses
+tx.append("""
+    MATCH (n)-[:SPOUSE]-(r)
+    WHERE ID(n)={}
+    RETURN ID(r)
+""".format(individual_id))
+# siblings
+tx.append("""
+    MATCH (n)<-[:FATHER_OF|:MOTHER_OF]-(p)-[:FATHER_OF|:MOTHER_OF]->(r)
+    WHERE ID(n)={}
+    RETURN DISTINCT ID(r)
+""".format(individual_id))
+# children
+tx.append("""
+    MATCH (n)-[:FATHER_OF|:MOTHER_OF]->(r)
+    WHERE ID(n)={}
+    RETURN ID(r)
+""".format(individual_id))
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <h1>Q&A</h1>
+        </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
